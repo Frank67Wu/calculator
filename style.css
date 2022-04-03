@@ -1,1 +1,37 @@
 
+#interface {
+    width: 180px;
+    height: 180px;
+}
+
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.interface {
+    display: flex;
+    justify-content: space-between;
+}
+
+.number, .operation, #equals, #clear {
+    display: flex;
+    border-style: solid;
+    height: 60px;
+    width: 60px;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.display {
+    display: flex;
+    justify-content: center;
+    width: 177px;
+    height: 50px;
+    border-style: solid;
+    align-items: center;
+}
+
