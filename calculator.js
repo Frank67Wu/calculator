@@ -12,6 +12,13 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+    if (b == 0) {
+        a = null;
+        b = null;
+        operator = null;
+        lastEntry = null;
+        return null;
+    }
     return a / b;
 }
 
@@ -39,24 +46,35 @@ let a = null;
 let b = null;
 let operator = null;
 let current = null;
-let singleEx = true;
+let lastEntry = null;
 
 let myNumbers = document.getElementsByClassName('number');
 for (let i =0; i < myNumbers.length; i++) {
     myNumbers[i].addEventListener('click', e => {
-        if (a == null) {
+        if (a == null && current == null) {
             a = parseInt(e.target.textContent);
             current = null;
             document.getElementsByClassName('display')[0].textContent = "";
             document.getElementsByClassName('display')[0].textContent += ` ${a}`
+            lastEntry = 'number';
         }
-        else if (operator != null){
-            b = a;
-            a = parseInt(e.target.textContent);
-            document.getElementsByClassName('display')[0].textContent += ` ${a}`
+        else if (operator != null && lastEntry == 'operator'){
+            if (operator == '/' && parseInt(e.target.textContent) == 0) {
+                document.getElementsByClassName('display')[0].textContent = "error, divide by zero";
+                current = null;
+                a = null;
+                b = null;
+                operator = null;
+                lastEntry = null;
+            }
+            else {
+                b = a;
+                a = parseInt(e.target.textContent);
+                document.getElementsByClassName('display')[0].textContent += ` ${a}`
+                lastEntry = 'number';
+            }
         }
         else {
-            console.log(e.target.textContent);
             let aLen = a.toString().length;
             a = 10 * a;
             a += parseInt(e.target.textContent);
@@ -64,8 +82,7 @@ for (let i =0; i < myNumbers.length; i++) {
             str = str.slice(0, -aLen);
             document.getElementsByClassName('display')[0].textContent = str;
             document.getElementsByClassName('display')[0].textContent += `${a}`
-            console.log(a);
-            console.log(b);
+            lastEntry = 'number';
         }
     })
 }
@@ -74,31 +91,48 @@ let myOperators = document.getElementsByClassName('operation');
 
 for (i = 0; i < myOperators.length; i++) {
     myOperators[i].addEventListener('click', e => {
-        if (!singleEx && operator != null) {
-            current = operate(operator, b, a);
-        }
-        if (operator == null && a != null) {
+        if (lastEntry != 'operator' && (current != null || a != null) ) {
+            if (current == null) {
+                current = operate(operator, b, a);
+            }
+            else {
+                current = operate(operator, current, a);
+            }
             operator = e.target.textContent;
             document.getElementsByClassName('display')[0].textContent += ` ${operator}`
+            
+            lastEntry = 'operator';
         }
-        else if (operator == null && current != null) {
-            a = current;
-            operator = e.target.textContent;
-            document.getElementsByClassName('display')[0].textContent += ` ${operator}`
-        }
+
     })
 }
 
 let myEqual = document.getElementById('equals');
 myEqual.addEventListener('click', e => {
-    if (singleEx) {
-        current = operate(operator, b, a);
+    if (lastEntry != 'operator') {
+        if (current == null) {
+            current = operate(operator, b, a);
+        }
+        else {
+            current = operate(operator, current, a);
+        }
+        document.getElementsByClassName('display')[0].textContent = current;
     }
     else {
-        current = operate(operator, current, a);
+        document.getElementsByClassName('display')[0].textContent = "error";
     }
-    document.getElementsByClassName('display')[0].textContent = current; 
+    a = null;
+    b = null;
+    lastEntry = null;
+})
+
+
+let myClear = document.getElementById('clear');
+myClear.addEventListener('click', e => {
+    document.getElementsByClassName('display')[0].textContent = "";
     a = null;
     b = null;
     operator = null;
+    lastEntry = null;
+    current = null;
 })
